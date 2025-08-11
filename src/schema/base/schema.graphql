@@ -1,0 +1,39 @@
+type Query {
+  me: User!
+}
+
+type Mutation {
+  registerUser(input: RegisterUserInput!): AuthPayload!
+  loginUser(email: String!, password: String!): AuthPayload!
+}
+
+input RegisterUserInput {
+  email: String!
+  password: String!
+  firstName: String
+  lastName: String
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+type User {
+  id: ID!
+  email: String!
+  firstName: String
+  lastName: String
+  sentEmails: [Email!]!
+  receivedEmails: [Email!]!
+}
+
+type Email {
+  id: ID!
+  subject: String
+  body: String
+  read: Boolean
+  createdAt: String
+  sender: User!
+  receiver: User!
+}
