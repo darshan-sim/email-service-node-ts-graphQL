@@ -1,9 +1,9 @@
 import { prisma } from "../context";
 import bcrypt from "bcrypt";
-import jwt, { JwtPayload, verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { LoginUser, RegisterUser } from "../validations/auth.validation";
 import errorMessage from "../constant/error";
-import { User } from "@prisma/client";
+import { GraphQLError } from "graphql";
 
 const saltRound = 10;
 
@@ -55,7 +55,7 @@ export default class AuthService {
       },
     });
     if (existingUser) {
-      throw new Error(errorMessage.EMAIL_REGISTERED);
+      throw new GraphQLError(errorMessage.EMAIL_REGISTERED);
     }
     const hashedPassword = await hashPassword(password);
     const user = await prisma.user.create({
@@ -80,11 +80,11 @@ export default class AuthService {
       select: { ...USER_SELECT, password: true },
     });
     if (!existingUser) {
-      throw new Error(errorMessage.INVALID_CREDENTIALS);
+      throw new GraphQLError(errorMessage.INVALID_CREDENTIALS);
     }
     const isMatch = await bcrypt.compare(password, existingUser.password);
     if (!isMatch) {
-      throw new Error(errorMessage.INVALID_CREDENTIALS);
+      throw new GraphQLError(errorMessage.INVALID_CREDENTIALS);
     }
     const { password: _pw, ...user } = existingUser;
     const token = signJWT(user.id, user.email);
