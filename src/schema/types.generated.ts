@@ -130,6 +130,15 @@ export type SendEmail = {
   to: Scalars["String"]["input"];
 };
 
+export type Subscription = {
+  __typename?: "Subscription";
+  newEmail: Email;
+};
+
+export type SubscriptionnewEmailArgs = {
+  userId: Scalars["ID"]["input"];
+};
+
 export type User = {
   __typename?: "User";
   email: Scalars["String"]["output"];
@@ -262,6 +271,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   RegisterUserInput: RegisterUserInput;
   SendEmail: SendEmail;
+  Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<
     Omit<User, "receivedEmails" | "sentEmails"> & {
       receivedEmails: Array<ResolversTypes["Email"]>;
@@ -287,6 +297,7 @@ export type ResolversParentTypes = {
   Query: {};
   RegisterUserInput: RegisterUserInput;
   SendEmail: SendEmail;
+  Subscription: {};
   User: Omit<User, "receivedEmails" | "sentEmails"> & {
     receivedEmails: Array<ResolversParentTypes["Email"]>;
     sentEmails: Array<ResolversParentTypes["Email"]>;
@@ -382,6 +393,20 @@ export type QueryResolvers<
   >;
 };
 
+export type SubscriptionResolvers<
+  ContextType = GraphQLContext,
+  ParentType extends
+    ResolversParentTypes["Subscription"] = ResolversParentTypes["Subscription"],
+> = {
+  newEmail?: SubscriptionResolver<
+    ResolversTypes["Email"],
+    "newEmail",
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionnewEmailArgs, "userId">
+  >;
+};
+
 export type UserResolvers<
   ContextType = GraphQLContext,
   ParentType extends
@@ -414,5 +439,6 @@ export type Resolvers<ContextType = GraphQLContext> = {
   MarkAsReadPayload?: MarkAsReadPayloadResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };

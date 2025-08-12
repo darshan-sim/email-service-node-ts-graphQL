@@ -60,6 +60,10 @@ input SendEmail {
   to: String!
 }
 
+type Subscription {
+  newEmail(userId: ID!): Email!
+}
+
 type User {
   email: String!
   firstName: String

@@ -222,6 +222,37 @@ export const typeDefs = {
       ],
     },
     {
+      kind: "ObjectTypeDefinition",
+      name: { kind: "Name", value: "Subscription" },
+      interfaces: [],
+      directives: [],
+      fields: [
+        {
+          kind: "FieldDefinition",
+          name: { kind: "Name", value: "newEmail" },
+          arguments: [
+            {
+              kind: "InputValueDefinition",
+              name: { kind: "Name", value: "userId" },
+              type: {
+                kind: "NonNullType",
+                type: {
+                  kind: "NamedType",
+                  name: { kind: "Name", value: "ID" },
+                },
+              },
+              directives: [],
+            },
+          ],
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Email" } },
+          },
+          directives: [],
+        },
+      ],
+    },
+    {
       kind: "InputObjectTypeDefinition",
       name: { kind: "Name", value: "RegisterUserInput" },
       directives: [],
@@ -570,6 +601,14 @@ export const typeDefs = {
             name: { kind: "Name", value: "Mutation" },
           },
           operation: "mutation",
+        },
+        {
+          kind: "OperationTypeDefinition",
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "Subscription" },
+          },
+          operation: "subscription",
         },
       ],
     },

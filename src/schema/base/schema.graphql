@@ -12,6 +12,10 @@ type Mutation {
   markAsRead(input: MarkAsReadInput!): MarkAsReadPayload!
 }
 
+type Subscription {
+  newEmail(userId: ID!): Email!
+}
+
 input RegisterUserInput {
   email: String!
   password: String!
