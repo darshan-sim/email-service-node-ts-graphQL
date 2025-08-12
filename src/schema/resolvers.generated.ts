@@ -7,6 +7,7 @@ import { loginUser as Mutation_loginUser } from "./base/resolvers/Mutation/login
 import { markAsRead as Mutation_markAsRead } from "./base/resolvers/Mutation/markAsRead";
 import { registerUser as Mutation_registerUser } from "./base/resolvers/Mutation/registerUser";
 import { sendEmail as Mutation_sendEmail } from "./base/resolvers/Mutation/sendEmail";
+import { newEmail as Subscription_newEmail } from "./base/resolvers/Subscription/newEmail";
 import { Email } from "./base/resolvers/Email";
 import { User } from "./base/resolvers/User";
 export const resolvers: Resolvers = {
@@ -17,7 +18,7 @@ export const resolvers: Resolvers = {
     registerUser: Mutation_registerUser,
     sendEmail: Mutation_sendEmail,
   },
-
+  Subscription: { newEmail: Subscription_newEmail },
   Email: Email,
   User: User,
 };

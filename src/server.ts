@@ -10,6 +10,9 @@ import { schema } from "./schema";
 import { createContext } from "./context";
 import { USER_SELECT } from "./services/auth.service";
 import { createYoga, useExtendContext } from "graphql-yoga";
+import { WebSocketServer } from "ws";
+import { useServer } from "graphql-ws/use/ws";
+
 dotenv.config();
 
 if (!process.env.JWT_SECRET) {
@@ -22,6 +25,10 @@ if (!process.env.JWT_SECRET) {
 const yoga = createYoga({
   schema,
   context: createContext,
+  graphiql: {
+    // Use WebSockets in GraphiQL
+    subscriptionsProtocol: "WS",
+  },
   plugins: [
     useJWT({
       signingKeyProviders: [
@@ -61,6 +68,44 @@ const yoga = createYoga({
 });
 
 const server = createServer(yoga);
+
+const wsServer = new WebSocketServer({
+  server: server,
+  path: yoga.graphqlEndpoint,
+});
+
+useServer(
+  {
+    execute: (args: any) => args.rootValue.execute(args),
+    subscribe: (args: any) => args.rootValue.subscribe(args),
+    onSubscribe: async (ctx, _id, params) => {
+      const { schema, execute, subscribe, contextFactory, parse, validate } =
+        yoga.getEnveloped({
+          ...ctx,
+          req: ctx.extra.request,
+          socket: ctx.extra.socket,
+          params,
+        });
+
+      const args = {
+        schema,
+        operationName: params.operationName,
+        document: parse(params.query),
+        variableValues: params.variables,
+        contextValue: await contextFactory(),
+        rootValue: {
+          execute,
+          subscribe,
+        },
+      };
+
+      const errors = validate(args.schema, args.document);
+      if (errors.length) return errors;
+      return args;
+    },
+  },
+  wsServer,
+);
 
 server.listen(4000, () => {
   console.info("Server is running on http://localhost:4000/graphql");
