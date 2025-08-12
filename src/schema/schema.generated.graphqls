@@ -13,10 +13,16 @@ type Email {
   subject: String
 }
 
+"""
+If an email filter is applied on the `inbox` query,
+filter emails based on the sender.
+
+If an email filter is applied on the `sentEmail` query,
+filter emails based on the receiver.
+"""
 input EmailFilters {
+  email: String
   read: Boolean
-  receiverEmail: String
-  senderEmail: String
   subject: String
 }
 

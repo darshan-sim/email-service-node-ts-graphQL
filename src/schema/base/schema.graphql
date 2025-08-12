@@ -38,11 +38,17 @@ input MarkAsReadInput {
   ids: [ID!]!
 }
 
+"""
+If an email filter is applied on the `inbox` query,
+filter emails based on the sender.
+
+If an email filter is applied on the `sentEmail` query,
+filter emails based on the receiver.
+"""
 input EmailFilters {
   read: Boolean
   subject: String
-  senderEmail: String
-  receiverEmail: String
+  email: String
 }
 
 type User {

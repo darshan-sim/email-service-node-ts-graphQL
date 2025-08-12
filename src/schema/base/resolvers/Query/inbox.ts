@@ -1,27 +1,27 @@
-import { GraphQLError } from "graphql";
-import MailService, { ReceiveFilters } from "../../../../services/mail.service";
-import type { QueryResolvers } from "./../../../types.generated";
-import errorMessage from "../../../../constant/error";
-export const inbox: NonNullable<QueryResolvers["inbox"]> = async (
-  _parent,
-  args,
-  context,
+import { GraphQLError } from 'graphql';
+import MailService, { ReceiveFilters } from '../../../../services/mail.service';
+import type { QueryResolvers } from './../../../types.generated';
+import errorMessage from '../../../../constant/error';
+export const inbox: NonNullable<QueryResolvers['inbox']> = async (
+	_parent,
+	args,
+	context
 ) => {
-  if (!context.currentUser) {
-    throw new GraphQLError(errorMessage.UNAUTHORIZED);
-  }
-  const { take, skip, filters } = args;
+	if (!context.currentUser) {
+		throw new GraphQLError(errorMessage.UNAUTHORIZED);
+	}
+	const { take, skip, filters } = args;
 
-  const sentEmailFilter: ReceiveFilters = {
-    ...(filters?.read && { read: filters.read }),
-    ...(filters?.subject && { subject: filters.subject }),
-    ...(filters?.senderEmail && { sender: { email: filters.senderEmail } }),
-  };
+	const sentEmailFilter: ReceiveFilters = {
+		...(typeof filters?.read === 'boolean' && { read: filters.read }),
+		...(filters?.subject && { subject: filters.subject }),
+		...(filters?.email && { sender: { email: filters.email } })
+	};
 
-  return await MailService.receivedEmails(
-    context.currentUser.id,
-    take,
-    skip,
-    sentEmailFilter,
-  );
+	return await MailService.receivedEmails(
+		context.currentUser.id,
+		take,
+		skip,
+		sentEmailFilter
+	);
 };

@@ -6,15 +6,15 @@ export const Email: EmailResolvers = {
   createdAt: ({ createdAt }, _arg, _ctx) => {
     return createdAt ? createdAt.toISOString() : null;
   },
-  receiver: async (parent, _arg, _ctx) => {
-    const receiver = await AuthService.user(parent.receiverId);
+  receiver: async ({ receiverId }, _arg, _ctx) => {
+    const receiver = await AuthService.user(receiverId);
     if (!receiver) {
       throw new GraphQLError(errorMessage.EMAIL_RECEIVER_NOT_FOUND);
     }
     return receiver;
   },
-  sender: async (parent, _arg, _ctx) => {
-    const sender = await AuthService.user(parent.senderId);
+  sender: async ({ senderId }, _arg, _ctx) => {
+    const sender = await AuthService.user(senderId);
     if (!sender) {
       throw new GraphQLError(errorMessage.EMAIL_SENDER_NOT_FOUND);
     }

@@ -6,9 +6,9 @@ import MailService from "../../../../services/mail.service";
 export const markAsRead: NonNullable<MutationResolvers["markAsRead"]> = async (
   _parent,
   args,
-  context,
+  { currentUser },
 ) => {
-  if (!context.currentUser) {
+  if (!currentUser) {
     throw new GraphQLError(errorMessage.UNAUTHORIZED);
   }
   const parsed = markAsReadSchema.safeParse(args.input);
@@ -16,6 +16,6 @@ export const markAsRead: NonNullable<MutationResolvers["markAsRead"]> = async (
     const error = parsed.error.issues.map((i) => i.message).join(", ");
     throw new GraphQLError(error);
   }
-  const count = await MailService.markAsRead(parsed.data.ids);
+  const count = await MailService.markAsRead(currentUser.id, parsed.data.ids);
   return { count };
 };

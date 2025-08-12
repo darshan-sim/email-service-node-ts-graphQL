@@ -51,10 +51,16 @@ export type Email = {
   subject?: Maybe<Scalars["String"]["output"]>;
 };
 
+/**
+ * If an email filter is applied on the `inbox` query,
+ * filter emails based on the sender.
+ *
+ * If an email filter is applied on the `sentEmail` query,
+ * filter emails based on the receiver.
+ */
 export type EmailFilters = {
+  email?: InputMaybe<Scalars["String"]["input"]>;
   read?: InputMaybe<Scalars["Boolean"]["input"]>;
-  receiverEmail?: InputMaybe<Scalars["String"]["input"]>;
-  senderEmail?: InputMaybe<Scalars["String"]["input"]>;
   subject?: InputMaybe<Scalars["String"]["input"]>;
 };
 

@@ -8,6 +8,7 @@ import { markAsRead as Mutation_markAsRead } from "./base/resolvers/Mutation/mar
 import { registerUser as Mutation_registerUser } from "./base/resolvers/Mutation/registerUser";
 import { sendEmail as Mutation_sendEmail } from "./base/resolvers/Mutation/sendEmail";
 import { Email } from "./base/resolvers/Email";
+import { User } from "./base/resolvers/User";
 export const resolvers: Resolvers = {
   Query: { inbox: Query_inbox, me: Query_me, sentEmail: Query_sentEmail },
   Mutation: {
@@ -18,4 +19,5 @@ export const resolvers: Resolvers = {
   },
 
   Email: Email,
+  User: User,
 };

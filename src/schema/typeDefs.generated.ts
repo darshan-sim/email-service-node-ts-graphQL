@@ -377,6 +377,12 @@ export const typeDefs = {
     },
     {
       kind: "InputObjectTypeDefinition",
+      description: {
+        kind: "StringValue",
+        value:
+          "If an email filter is applied on the `inbox` query,\nfilter emails based on the sender.\n\nIf an email filter is applied on the `sentEmail` query,\nfilter emails based on the receiver.",
+        block: true,
+      },
       name: { kind: "Name", value: "EmailFilters" },
       directives: [],
       fields: [
@@ -394,13 +400,7 @@ export const typeDefs = {
         },
         {
           kind: "InputValueDefinition",
-          name: { kind: "Name", value: "senderEmail" },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
-          directives: [],
-        },
-        {
-          kind: "InputValueDefinition",
-          name: { kind: "Name", value: "receiverEmail" },
+          name: { kind: "Name", value: "email" },
           type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
           directives: [],
         },
