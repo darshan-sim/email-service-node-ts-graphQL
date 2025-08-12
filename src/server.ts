@@ -1,58 +1,112 @@
-import { createServer } from 'node:http';
-import { createSchema, createYoga } from 'graphql-yoga';
+import { createServer } from "node:http";
 import {
-	createInlineSigningKeyProvider,
-	extractFromHeader,
-	useJWT
-} from '@graphql-yoga/plugin-jwt';
-import { useCSRFPrevention } from '@graphql-yoga/plugin-csrf-prevention';
-import dotenv from 'dotenv';
+  createInlineSigningKeyProvider,
+  extractFromHeader,
+  useJWT,
+} from "@graphql-yoga/plugin-jwt";
+import { useCSRFPrevention } from "@graphql-yoga/plugin-csrf-prevention";
+import dotenv from "dotenv";
+import { schema } from "./schema";
+import { createContext } from "./context";
+import { USER_SELECT } from "./services/auth.service";
+import { createYoga, useExtendContext } from "graphql-yoga";
+import { WebSocketServer } from "ws";
+import { useServer } from "graphql-ws/use/ws";
+
 dotenv.config();
 
 if (!process.env.JWT_SECRET) {
-	console.error(
-		'JWT_SECRET environment variable is not defined. Server cannot start.'
-	);
-	process.exit(1);
+  console.error(
+    "JWT_SECRET environment variable is not defined. Server cannot start.",
+  );
+  process.exit(1);
 }
 
 const yoga = createYoga({
-	schema: createSchema({
-		typeDefs: /* GraphQL */ `
-			type Query {
-				hello: String
-			}
-		`,
-		resolvers: {
-			Query: {
-				hello: () => 'Hello from Yoga!'
-			}
-		}
-	}),
-	plugins: [
-		useJWT({
-			signingKeyProviders: [
-				createInlineSigningKeyProvider(process.env.JWT_SECRET)
-			],
-			tokenLookupLocations: [
-				extractFromHeader({ name: 'authorization', prefix: 'Bearer' })
-			],
-			tokenVerification: {
-				algorithms: ['HS256', 'RS256']
-			},
-			reject: {
-				missingToken: true,
-				invalidToken: true
-			}
-		}),
-		useCSRFPrevention({
-			requestHeaders: ['x-graphql-yoga-csrf']
-		})
-	]
+  schema,
+  context: createContext,
+  graphiql: {
+    // Use WebSockets in GraphiQL
+    subscriptionsProtocol: "WS",
+  },
+  plugins: [
+    useJWT({
+      signingKeyProviders: [
+        createInlineSigningKeyProvider(process.env.JWT_SECRET),
+      ],
+      tokenLookupLocations: [
+        extractFromHeader({ name: "authorization", prefix: "Bearer" }),
+      ],
+      tokenVerification: {
+        algorithms: ["HS256"],
+      },
+      extendContext: true,
+      reject: {
+        missingToken: false,
+        invalidToken: true,
+      },
+    }),
+    useExtendContext(async (ctx) => {
+      if (!ctx.jwt) {
+        return {};
+      }
+      const { id } = ctx.jwt?.payload;
+      if (!id) {
+        return {};
+      }
+      const currentUser = await ctx.prisma.user.findUnique({
+        where: { id },
+        select: USER_SELECT,
+      });
+      if (!currentUser) return {};
+      return { currentUser };
+    }),
+    useCSRFPrevention({
+      requestHeaders: ["x-graphql-yoga-csrf"],
+    }),
+  ],
 });
 
 const server = createServer(yoga);
 
+const wsServer = new WebSocketServer({
+  server: server,
+  path: yoga.graphqlEndpoint,
+});
+
+useServer(
+  {
+    execute: (args: any) => args.rootValue.execute(args),
+    subscribe: (args: any) => args.rootValue.subscribe(args),
+    onSubscribe: async (ctx, _id, params) => {
+      const { schema, execute, subscribe, contextFactory, parse, validate } =
+        yoga.getEnveloped({
+          ...ctx,
+          req: ctx.extra.request,
+          socket: ctx.extra.socket,
+          params,
+        });
+
+      const args = {
+        schema,
+        operationName: params.operationName,
+        document: parse(params.query),
+        variableValues: params.variables,
+        contextValue: await contextFactory(),
+        rootValue: {
+          execute,
+          subscribe,
+        },
+      };
+
+      const errors = validate(args.schema, args.document);
+      if (errors.length) return errors;
+      return args;
+    },
+  },
+  wsServer,
+);
+
 server.listen(4000, () => {
-	console.info('Server is running on http://localhost:4000/graphql');
+  console.info("Server is running on http://localhost:4000/graphql");
 });
