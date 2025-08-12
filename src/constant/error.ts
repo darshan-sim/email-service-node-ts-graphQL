@@ -6,5 +6,8 @@ const errorMessage = {
   USER_NOT_FOUND: "User not found. Please register before logging in.",
   UNAUTHORIZED: "You are not authorized to perform this action. Please log in.",
   FORBIDDEN: "You do not have permission to access this resource.",
+
+  EMAIL_RECEIVER_NOT_FOUND: "The recipient of this email could not be found.",
+  EMAIL_SENDER_NOT_FOUND: "The sender of this email could not be found.",
 };
 export default errorMessage;

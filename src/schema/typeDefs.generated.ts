@@ -18,6 +18,89 @@ export const typeDefs = {
           },
           directives: [],
         },
+        {
+          kind: "FieldDefinition",
+          name: { kind: "Name", value: "inbox" },
+          arguments: [
+            {
+              kind: "InputValueDefinition",
+              name: { kind: "Name", value: "take" },
+              type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+              defaultValue: { kind: "IntValue", value: "10" },
+              directives: [],
+            },
+            {
+              kind: "InputValueDefinition",
+              name: { kind: "Name", value: "skip" },
+              type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+              defaultValue: { kind: "IntValue", value: "0" },
+              directives: [],
+            },
+            {
+              kind: "InputValueDefinition",
+              name: { kind: "Name", value: "filters" },
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "EmailFilters" },
+              },
+              directives: [],
+            },
+          ],
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "ListType",
+              type: {
+                kind: "NonNullType",
+                type: {
+                  kind: "NamedType",
+                  name: { kind: "Name", value: "Email" },
+                },
+              },
+            },
+          },
+          directives: [],
+        },
+        {
+          kind: "FieldDefinition",
+          name: { kind: "Name", value: "sentEmail" },
+          arguments: [
+            {
+              kind: "InputValueDefinition",
+              name: { kind: "Name", value: "take" },
+              type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+              defaultValue: { kind: "IntValue", value: "10" },
+              directives: [],
+            },
+            {
+              kind: "InputValueDefinition",
+              name: { kind: "Name", value: "skip" },
+              type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+              defaultValue: { kind: "IntValue", value: "0" },
+              directives: [],
+            },
+            {
+              kind: "InputValueDefinition",
+              name: { kind: "Name", value: "filters" },
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "EmailFilters" },
+              },
+              directives: [],
+            },
+          ],
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "ListType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "Email" },
+              },
+            },
+          },
+          directives: [],
+        },
       ],
     },
     {
@@ -86,6 +169,52 @@ export const typeDefs = {
             type: {
               kind: "NamedType",
               name: { kind: "Name", value: "AuthPayload" },
+            },
+          },
+          directives: [],
+        },
+        {
+          kind: "FieldDefinition",
+          name: { kind: "Name", value: "sendEmail" },
+          arguments: [
+            {
+              kind: "InputValueDefinition",
+              name: { kind: "Name", value: "input" },
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "SendEmail" },
+              },
+              directives: [],
+            },
+          ],
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Email" } },
+          },
+          directives: [],
+        },
+        {
+          kind: "FieldDefinition",
+          name: { kind: "Name", value: "markAsRead" },
+          arguments: [
+            {
+              kind: "InputValueDefinition",
+              name: { kind: "Name", value: "input" },
+              type: {
+                kind: "NonNullType",
+                type: {
+                  kind: "NamedType",
+                  name: { kind: "Name", value: "MarkAsReadInput" },
+                },
+              },
+              directives: [],
+            },
+          ],
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "MarkAsReadPayload" },
             },
           },
           directives: [],
@@ -162,6 +291,117 @@ export const typeDefs = {
             kind: "NonNullType",
             type: { kind: "NamedType", name: { kind: "Name", value: "User" } },
           },
+          directives: [],
+        },
+      ],
+    },
+    {
+      kind: "ObjectTypeDefinition",
+      name: { kind: "Name", value: "MarkAsReadPayload" },
+      interfaces: [],
+      directives: [],
+      fields: [
+        {
+          kind: "FieldDefinition",
+          name: { kind: "Name", value: "count" },
+          arguments: [],
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+          directives: [],
+        },
+      ],
+    },
+    {
+      kind: "InputObjectTypeDefinition",
+      name: { kind: "Name", value: "SendEmail" },
+      directives: [],
+      fields: [
+        {
+          kind: "InputValueDefinition",
+          name: { kind: "Name", value: "to" },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+          directives: [],
+        },
+        {
+          kind: "InputValueDefinition",
+          name: { kind: "Name", value: "subject" },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+          directives: [],
+        },
+        {
+          kind: "InputValueDefinition",
+          name: { kind: "Name", value: "body" },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+          directives: [],
+        },
+      ],
+    },
+    {
+      kind: "InputObjectTypeDefinition",
+      name: { kind: "Name", value: "MarkAsReadInput" },
+      directives: [],
+      fields: [
+        {
+          kind: "InputValueDefinition",
+          name: { kind: "Name", value: "ids" },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "ListType",
+              type: {
+                kind: "NonNullType",
+                type: {
+                  kind: "NamedType",
+                  name: { kind: "Name", value: "ID" },
+                },
+              },
+            },
+          },
+          directives: [],
+        },
+      ],
+    },
+    {
+      kind: "InputObjectTypeDefinition",
+      description: {
+        kind: "StringValue",
+        value:
+          "If an email filter is applied on the `inbox` query,\nfilter emails based on the sender.\n\nIf an email filter is applied on the `sentEmail` query,\nfilter emails based on the receiver.",
+        block: true,
+      },
+      name: { kind: "Name", value: "EmailFilters" },
+      directives: [],
+      fields: [
+        {
+          kind: "InputValueDefinition",
+          name: { kind: "Name", value: "read" },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Boolean" } },
+          directives: [],
+        },
+        {
+          kind: "InputValueDefinition",
+          name: { kind: "Name", value: "subject" },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+          directives: [],
+        },
+        {
+          kind: "InputValueDefinition",
+          name: { kind: "Name", value: "email" },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
           directives: [],
         },
       ],

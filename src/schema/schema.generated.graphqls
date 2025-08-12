@@ -13,13 +13,51 @@ type Email {
   subject: String
 }
 
+"""
+If an email filter is applied on the `inbox` query,
+filter emails based on the sender.
+
+If an email filter is applied on the `sentEmail` query,
+filter emails based on the receiver.
+"""
+input EmailFilters {
+  email: String
+  read: Boolean
+  subject: String
+}
+
+input MarkAsReadInput {
+  ids: [ID!]!
+}
+
+type MarkAsReadPayload {
+  count: Int!
+}
+
 type Mutation {
   loginUser(email: String!, password: String!): AuthPayload!
+  markAsRead(input: MarkAsReadInput!): MarkAsReadPayload!
   registerUser(input: RegisterUserInput!): AuthPayload!
+  sendEmail(input: SendEmail): Email!
 }
 
 type Query {
+  inbox(filters: EmailFilters, skip: Int = 0, take: Int = 10): [Email!]!
   me: User!
+  sentEmail(filters: EmailFilters, skip: Int = 0, take: Int = 10): [Email]!
+}
+
+input RegisterUserInput {
+  email: String!
+  firstName: String
+  lastName: String
+  password: String!
+}
+
+input SendEmail {
+  body: String!
+  subject: String
+  to: String!
 }
 
 type User {
@@ -29,11 +67,4 @@ type User {
   lastName: String
   receivedEmails: [Email!]!
   sentEmails: [Email!]!
-}
-
-input RegisterUserInput {
-  email: String!
-  firstName: String
-  lastName: String
-  password: String!
 }

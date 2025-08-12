@@ -1,10 +1,15 @@
+# todo : return pagination object containing info for client
 type Query {
   me: User!
+  inbox(take: Int = 10, skip: Int = 0, filters: EmailFilters): [Email!]!
+  sentEmail(take: Int = 10, skip: Int = 0, filters: EmailFilters): [Email]!
 }
 
 type Mutation {
   registerUser(input: RegisterUserInput!): AuthPayload!
   loginUser(email: String!, password: String!): AuthPayload!
+  sendEmail(input: SendEmail): Email!
+  markAsRead(input: MarkAsReadInput!): MarkAsReadPayload!
 }
 
 input RegisterUserInput {
@@ -17,6 +22,33 @@ input RegisterUserInput {
 type AuthPayload {
   token: String!
   user: User!
+}
+
+type MarkAsReadPayload {
+  count: Int!
+}
+
+input SendEmail {
+  to: String!
+  subject: String
+  body: String!
+}
+
+input MarkAsReadInput {
+  ids: [ID!]!
+}
+
+"""
+If an email filter is applied on the `inbox` query,
+filter emails based on the sender.
+
+If an email filter is applied on the `sentEmail` query,
+filter emails based on the receiver.
+"""
+input EmailFilters {
+  read: Boolean
+  subject: String
+  email: String
 }
 
 type User {
