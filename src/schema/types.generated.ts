@@ -51,10 +51,28 @@ export type Email = {
   subject?: Maybe<Scalars["String"]["output"]>;
 };
 
+export type EmailFilters = {
+  read?: InputMaybe<Scalars["Boolean"]["input"]>;
+  receiverEmail?: InputMaybe<Scalars["String"]["input"]>;
+  senderEmail?: InputMaybe<Scalars["String"]["input"]>;
+  subject?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type MarkAsReadInput = {
+  ids: Array<Scalars["ID"]["input"]>;
+};
+
+export type MarkAsReadPayload = {
+  __typename?: "MarkAsReadPayload";
+  count: Scalars["Int"]["output"];
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   loginUser: AuthPayload;
+  markAsRead: MarkAsReadPayload;
   registerUser: AuthPayload;
+  sendEmail: Email;
 };
 
 export type MutationloginUserArgs = {
@@ -62,13 +80,35 @@ export type MutationloginUserArgs = {
   password: Scalars["String"]["input"];
 };
 
+export type MutationmarkAsReadArgs = {
+  input: MarkAsReadInput;
+};
+
 export type MutationregisterUserArgs = {
   input: RegisterUserInput;
 };
 
+export type MutationsendEmailArgs = {
+  input?: InputMaybe<SendEmail>;
+};
+
 export type Query = {
   __typename?: "Query";
+  inbox: Array<Email>;
   me: User;
+  sentEmail: Array<Maybe<Email>>;
+};
+
+export type QueryinboxArgs = {
+  filters?: InputMaybe<EmailFilters>;
+  skip?: InputMaybe<Scalars["Int"]["input"]>;
+  take?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+export type QuerysentEmailArgs = {
+  filters?: InputMaybe<EmailFilters>;
+  skip?: InputMaybe<Scalars["Int"]["input"]>;
+  take?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
 export type RegisterUserInput = {
@@ -76,6 +116,12 @@ export type RegisterUserInput = {
   firstName?: InputMaybe<Scalars["String"]["input"]>;
   lastName?: InputMaybe<Scalars["String"]["input"]>;
   password: Scalars["String"]["input"];
+};
+
+export type SendEmail = {
+  body: Scalars["String"]["input"];
+  subject?: InputMaybe<Scalars["String"]["input"]>;
+  to: Scalars["String"]["input"];
 };
 
 export type User = {
@@ -202,9 +248,14 @@ export type ResolversTypes = {
   Email: ResolverTypeWrapper<EmailMapper>;
   ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
+  EmailFilters: EmailFilters;
+  MarkAsReadInput: MarkAsReadInput;
+  MarkAsReadPayload: ResolverTypeWrapper<MarkAsReadPayload>;
+  Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   RegisterUserInput: RegisterUserInput;
+  SendEmail: SendEmail;
   User: ResolverTypeWrapper<
     Omit<User, "receivedEmails" | "sentEmails"> & {
       receivedEmails: Array<ResolversTypes["Email"]>;
@@ -222,9 +273,14 @@ export type ResolversParentTypes = {
   Email: EmailMapper;
   ID: Scalars["ID"]["output"];
   Boolean: Scalars["Boolean"]["output"];
+  EmailFilters: EmailFilters;
+  MarkAsReadInput: MarkAsReadInput;
+  MarkAsReadPayload: MarkAsReadPayload;
+  Int: Scalars["Int"]["output"];
   Mutation: {};
   Query: {};
   RegisterUserInput: RegisterUserInput;
+  SendEmail: SendEmail;
   User: Omit<User, "receivedEmails" | "sentEmails"> & {
     receivedEmails: Array<ResolversParentTypes["Email"]>;
     sentEmails: Array<ResolversParentTypes["Email"]>;
@@ -260,6 +316,15 @@ export type EmailResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type MarkAsReadPayloadResolvers<
+  ContextType = GraphQLContext,
+  ParentType extends
+    ResolversParentTypes["MarkAsReadPayload"] = ResolversParentTypes["MarkAsReadPayload"],
+> = {
+  count?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<
   ContextType = GraphQLContext,
   ParentType extends
@@ -271,11 +336,23 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationloginUserArgs, "email" | "password">
   >;
+  markAsRead?: Resolver<
+    ResolversTypes["MarkAsReadPayload"],
+    ParentType,
+    ContextType,
+    RequireFields<MutationmarkAsReadArgs, "input">
+  >;
   registerUser?: Resolver<
     ResolversTypes["AuthPayload"],
     ParentType,
     ContextType,
     RequireFields<MutationregisterUserArgs, "input">
+  >;
+  sendEmail?: Resolver<
+    ResolversTypes["Email"],
+    ParentType,
+    ContextType,
+    Partial<MutationsendEmailArgs>
   >;
 };
 
@@ -284,7 +361,19 @@ export type QueryResolvers<
   ParentType extends
     ResolversParentTypes["Query"] = ResolversParentTypes["Query"],
 > = {
+  inbox?: Resolver<
+    Array<ResolversTypes["Email"]>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryinboxArgs, "skip" | "take">
+  >;
   me?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  sentEmail?: Resolver<
+    Array<Maybe<ResolversTypes["Email"]>>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerysentEmailArgs, "skip" | "take">
+  >;
 };
 
 export type UserResolvers<
@@ -316,6 +405,7 @@ export type UserResolvers<
 export type Resolvers<ContextType = GraphQLContext> = {
   AuthPayload?: AuthPayloadResolvers<ContextType>;
   Email?: EmailResolvers<ContextType>;
+  MarkAsReadPayload?: MarkAsReadPayloadResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;

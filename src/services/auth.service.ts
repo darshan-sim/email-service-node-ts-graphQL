@@ -91,4 +91,13 @@ export default class AuthService {
     return { token, user };
   };
 
+  static user = async (id: string) => {
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+      select: USER_SELECT,
+    });
+    return existingUser;
+  };
 }

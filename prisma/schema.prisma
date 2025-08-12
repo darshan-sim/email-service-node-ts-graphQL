@@ -23,7 +23,7 @@ model User {
 
 model Email {
   id        String   @id @default(uuid())
-  subject   String
+  subject   String?
   body      String
   read      Boolean  @default(false)
   createdAt DateTime @default(now()) @map("created_at")
